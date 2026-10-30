@@ -1,1 +1,37 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ball Sort Puzzle</title><style>body{background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;color:#fff;font-family:sans-serif}#game{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px;margin:20px 0}.tube{width:65px;height:240px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:0 0 30px 30px;display:flex;flex-direction:column-reverse;align-items:center;padding:5px 5px 12px}.tube.s{transform:translateY(-15px);border-color:#ffeb3b}.ball{width:52px;height:52px;border-radius:50%;margin:2px 0;box-shadow:inset -4px -4px 8px rgba(0,0,0,.3)}button{padding:10px 20px;border:0;border-radius:20px;background:#fff;color:#764ba2;font-weight:700;margin:5px}</style></head><body><h1>Ball Sort Puzzle</h1><div>Moves:<span id="m">0</span></div><div id="game"></div><div><button onclick="u()">Undo</button><button onclick="r()">Restart</button></div><script>const C=['#ff4757','#2ed573','#1e90ff','#ffa502'];let T=[],S=null,M=0,H=[];function I(){T=[];M=0;S=null;H=[];document.getElementById('m').innerText=M;let b=[];for(let i=0;i<3;i++)for(let j=0;j<4;j++)b.push(C[i]);b=b.sort(()=>Math.random()-.5);for(let i=0;i<6;i++){T[i]=[];if(i<3)for(let j=0;j<4;j++)T[i].push(b.pop());}R();}function R(){const g=document.getElementById('game');g.innerHTML='';T.forEach((tube,i)=>{const d=document.createElement('div');d.className='tube'+(S===i?' s':'');d.onclick=()=>K(i);tube.forEach(c=>{const b=document.createElement('div');b.className='ball';b.style.background=c;g.style.backgroundColor=c;d.appendChild(b);b.style.background=`radial-gradient(circle at 30% 30%, #fff, ${c})`;});g.appendChild(d);});W();}function K(i){if(S===null){if(T[i].length>0){S=i;R();}}else{if(S===i){S=null;R();return;}if(Cp(S,i)){H.push(JSON.parse(JSON.stringify(T)));T[i].push(T[S].pop());M++;document.getElementById('m').innerText=M;S=null;R();}else{S=i;R();}}}function Cp(f,t){if(T[f].length===0)return false;if(T[t].length>=4)return false;if(T[t].length===0)return true;return T[t][T[t].length-1]===T[f][T[f].length-1];}function W(){if(T.every(t=>t.length===0||(t.length===4&&t.every(c=>c===t[0])))){setTimeout(()=>{alert('Win in '+M+' moves!');I();},300);}}function u(){if(H.length>0){T=H.pop();M=Math.max(0,M-1);document.getElementById('m').innerText=M;S=null;R();}}function r(){I();}I();</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ball Sort Puzzle - iOS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#fff}
+h1{margin:15px 0 5px;font-size:28px;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+#info{background:rgba(255,255,255,.2);padding:8px 20px;border-radius:20px;margin-bottom:15px;backdrop-filter:blur(10px)}
+#game{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:420px}
+.tube{width:70px;height:260px;background:linear-gradient(to bottom,rgba(255,255,255,.25),rgba(255,255,255,.1));border:2px solid rgba(255,255,255,.4);border-radius:0 0 35px 35px;display:flex;flex-direction:column-reverse;align-items:center;padding:6px 6px 15px;transition:.3s;position:relative}
+.tube.sel{transform:translateY(-18px);border-color:#ffeb3b;box-shadow:0 0 20px #ffeb3b}
+.ball{width:54px;height:54px;border-radius:50%;margin:2px 0;border:2px solid rgba(0,0,0,.1);box-shadow:inset -5px -5px 10px rgba(0,0,0,.3),0 3px 8px rgba(0,0,0,.2)}
+.btns{margin-top:20px;display:flex;gap:10px}
+.btn{padding:12px 24px;border:0;border-radius:25px;background:#fff;color:#764ba2;font-weight:800;font-size:16px;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+<h1>Ball Sort Puzzle</h1>
+<div id="info">Moves: <span id="mv">0</span> | Level: <span id="lv">1</span></div>
+<div id="game"></div>
+<div class="btns"><button class="btn" onclick="undo()">↩️ Undo</button><button class="btn" onclick="init()">🔄 Restart</button></div>
+<script>
+const COLORS=['#ff4757','#2ed573','#1e90ff','#ffa502','#ff6b81','#7bed9f'];
+let tubes=[],sel=null,moves=0,hist=[];
+function init(){tubes=[];moves=0;sel=null;hist=[];document.getElementById('mv').textContent=moves;let balls=[];for(let i=0;i<3;i++)for(let j=0;j<4;j++)balls.push(COLORS[i]);balls=balls.sort(()=>Math.random()-.5);for(let i=0;i<5;i++){tubes[i]=[];if(i<3)for(let j=0;j<4;j++)tubes[i].push(balls.pop());}render();}
+function render(){const g=document.getElementById('game');g.innerHTML='';tubes.forEach((tube,i)=>{const d=document.createElement('div');d.className='tube'+(sel===i?' sel':'');d.onclick=()=>clickTube(i);tube.forEach(c=>{const b=document.createElement('div');b.className='ball';b.style.background=`radial-gradient(circle at 35% 35%,#fff,${c} 60%)`;d.appendChild(b);});g.appendChild(d);});checkWin();}
+function clickTube(i){if(sel===null){if(tubes[i].length>0){sel=i;render();}}else{if(sel===i){sel=null;render();return;}if(canMove(sel,i)){hist.push(JSON.parse(JSON.stringify(tubes)));tubes[i].push(tubes[sel].pop());moves++;document.getElementById('mv').textContent=moves;sel=null;render();}else{sel=i;render();}}}
+function canMove(f,t){if(tubes[f].length===0)return false;if(tubes[t].length>=4)return false;if(tubes[t].length===0)return true;return tubes[t][tubes[t].length-1]===tubes[f][tubes[f].length-1];}
+function checkWin(){if(tubes.every(t=>t.length===0||(t.length===4&&t.every(c=>c===t[0])))){setTimeout(()=>{alert('🎉 You Win! Moves: '+moves);init();},400);}}
+function undo(){if(hist.length>0){tubes=hist.pop();moves=Math.max(0,moves-1);document.getElementById('mv').textContent=moves;sel=null;render();}}
+init();
+</script>
+</body>
+</html>
